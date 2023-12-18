@@ -1,6 +1,5 @@
 package com.materialcentral.container.image
 
-import com.materialcentral.MaterialsTable
 import com.materialcentral.container.repository.ContainerRepositoriesTable
 import org.geezer.db.FilteredUpdateStatement
 import org.geezer.db.schema.enum
@@ -9,14 +8,10 @@ import org.geezer.db.schema.uniqueIndexWithStandardName
 import com.materialcentral.os.Architecture
 import com.materialcentral.os.LinuxDistribution
 import com.materialcentral.os.OperatingSystemType
-import com.materialcentral.repository.container.ContainerRepositoriesTable
 import org.geezer.db.schema.DataTable
 import org.jetbrains.exposed.sql.*
 
 object ContainerImagesTable : DataTable<ContainerImage>("container_images") {
-
-    override val parentId: Column<Long>
-        get() = containerRepositoryId
 
     val containerRepositoryId = long("container_repository_id").referencesWithStandardNameAndIndex(ContainerRepositoriesTable.id, ReferenceOption.CASCADE)
 
@@ -60,7 +55,7 @@ object ContainerImagesTable : DataTable<ContainerImage>("container_images") {
         return ContainerImagesTable.select { (id inList containerImageIds) and (latestInRepository eq true) }.count() > 0L
     }
 
-    override fun mapMaterialToStatement(image: ContainerImage, statement: FilteredUpdateStatement, insert: Boolean) {
+    override fun mapDataToStatement(image: ContainerImage, statement: FilteredUpdateStatement, insert: Boolean) {
         if (insert) {
             statement[containerRepositoryId] = image.containerRepositoryId
             statement[digest] = image.digest

@@ -6,12 +6,11 @@ import org.geezer.io.ui.HasIcon
 import org.geezer.io.ui.Linkable
 import org.geezer.system.runtime.RuntimeClock
 import org.geezer.HasName
-import org.geezer.db.Data
 import org.geezer.user.AppUser
 import kotlin.reflect.KFunction
 
 class User(
-    var externalIdentifier: String?,
+    var username: String?,
     email: String,
     name: String,
     createdAt: Long,

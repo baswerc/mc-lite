@@ -1,5 +1,6 @@
 package com.materialcentral.user.authentication.internal
 
+import com.materialcentral.user.UsersTable
 import org.geezer.db.schema.referencesWithStandardNameAndIndex
 import org.geezer.user.authentication.internal.AppUserCredentialsTable
 import org.jetbrains.exposed.sql.ReferenceOption

@@ -1,22 +1,20 @@
 package com.materialcentral.container.image.ui
 
-import com.materialcentral.MaterialGroupType
-import com.materialcentral.io.ui.userSession
-import org.geezer.db.schema.ilike
-import org.geezer.io.ui.table.UiColumn
-import org.geezer.io.ui.table.UiTable
+import com.materialcentral.container.image.ContainerImagesTable
 import com.materialcentral.os.Architecture
 import com.materialcentral.os.OperatingSystemType
-import com.materialcentral.container.image.ContainerImagesTable
-import com.materialcentral.user.authorization.Role
-import com.materialcentral.user.authorization.andAuthorized
-import jakarta.servlet.http.HttpServletRequest
 import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.span
+import org.geezer.db.schema.ilike
 import org.geezer.db.schema.optionalEnumLike
+import org.geezer.io.ui.table.UiColumn
+import org.geezer.io.ui.table.UiTable
 import org.geezer.routes.urls.UrlGen
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.or
 
 abstract class BaseImagesUiTable() : UiTable(rowDetailsColumn = ContainerImagesTable.id, rowDetailsRoute = ContainerImageUiController::getImageRowDetails) {
 
@@ -44,9 +42,5 @@ abstract class BaseImagesUiTable() : UiTable(rowDetailsColumn = ContainerImagesT
     fun createSearchQueryFilter(searchQuery: String): Op<Boolean> {
         return  (ContainerImagesTable.name ilike searchQuery) or (ContainerImagesTable.digest ilike searchQuery) or
                 (ContainerImagesTable.architecture.optionalEnumLike(searchQuery, Architecture)) or (ContainerImagesTable.os.optionalEnumLike(searchQuery, OperatingSystemType))
-    }
-
-    fun addAuthorization(query: Query, request: HttpServletRequest, role: Role = Role.VIEWER): Query {
-        return query.andAuthorized(role, MaterialGroupType.CONTAINER_REPOSITORY, request.userSession)
     }
 }

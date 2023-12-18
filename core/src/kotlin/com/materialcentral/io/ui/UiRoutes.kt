@@ -4,6 +4,8 @@ import com.materialcentral.io.Routes
 import com.materialcentral.oss.ui.OssPackageUiController
 import org.geezer.system.runtime.StringProperty
 import com.materialcentral.user.User
+import com.materialcentral.user.UserRole
+import com.materialcentral.user.session.UserSession
 import com.materialcentral.user.ui.UsersUiController
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -54,112 +56,10 @@ object UiRoutes {
         _routingTable = routingTable.with(rootUrlHandler = UiRoutes::getRootUiUrl, exceptionHandler = UiRoutes::handleException) {
 
             with("/", beforeFunction = ::requiredAuthenticated, afterFunction = ::setupLayout) {
-                add(HomeRoutes::get)
+                add(HomeUiController::get)
 
-                with(beforeHandler = createRoleGuard(Role.VIEWER)) {
+                with(beforeHandler = createRequireAllRoles(UserRole.VIEWER)) {
 
-                    with("/organizations") {
-                        add("/{}", OrganizationUiController::get)
-                    }
-
-
-                    with ("/oss") {
-                        with("/packages") {
-                            add("/{}", OssPackageUiController::getPackage)
-                            add("/releases/{}", OssPackageUiController::getRelease)
-                        }
-
-                        with("/projects") {
-                            add("/{}", OssProjectUiController::getProject)
-                        }
-                    }
-
-
-                    with("/known-vulnerabilities") {
-                        add(KnownVulnerabilityUiController::get)
-                        add("/{}", KnownVulnerabilityUiController::getKnownVulnerability)
-                    }
-
-                    with("/container-repositories") {
-
-                        add(ContainerRepositoryUiController::getAll)
-                        add("/row-details/{}", ContainerRepositoryUiController::getAllTableDetail)
-
-                        add("/{}", ContainerRepositoryUiController::getRepository)
-                        add("/{}/images", ContainerRepositoryUiController::getImages)
-                        add("/{}/images/badge", ContainerRepositoryUiController::getImagesBadge)
-                        add("/{}/images/table", ContainerRepositoryUiController::getImagesTable)
-                        add("/{}/policies", ContainerRepositoryUiController::getPolicies)
-                        add("/{}/policies/badge", ContainerRepositoryUiController::getPoliciesBadge)
-                        add("/{}/violations", ContainerRepositoryUiController::getViolations)
-                        add("/{}/violations/badge", ContainerRepositoryUiController::getViolationsBadge)
-
-                        add("/{}/edit", ContainerRepositoryUiController::getEdit, ContainerRepositoryUiController::postUpdate)
-                        add("/new", ContainerRepositoryUiController::getNew, ContainerRepositoryUiController::postCreate)
-
-                        add("/{}/synchronize-images", ContainerRepositoryUiController::postSynchronizeImages)
-                        add("/{}/evaluate-policies", ContainerRepositoryUiController::postEvaluatePolicies)
-
-                        with("/images") {
-                            add("{}/row-details", ContainerImageUiController::getImageRowDetails)
-
-                            add("{}", ContainerImageUiController::getImage)
-                            add("{}/tags", ContainerImageUiController::getTags)
-                            add("{}/tags/badge", ContainerImageUiController::getTagsBadge)
-                            add("{}/layers", ContainerImageUiController::getLayers)
-                            add("{}/layers/badge", ContainerImageUiController::getLayersBadge)
-                            add("{}/schedules", ContainerImageUiController::getScanSchedules)
-                            add("/{}/schedules/row-details/{}", ContainerImageUiController::getScanScheduleDetails)
-                            add("/{}/schedules/{}/start", ContainerImageUiController::postStartScheduleScan)
-                            add("{}/comments", ContainerImageUiController::getComments)
-                            add("{}/comments/badge", ContainerImageUiController::getCommentsBadge)
-                            add("{}/comments/list", ContainerImageUiController::getCommentsList)
-
-                            add("{}/comments/update", ContainerImageUiController::postUpdateComment)
-                            add("{}/comments/create", ContainerImageUiController::postCreateComment)
-                            add("{}/comments/delete", ContainerImageUiController::postDeleteComment)
-
-                            add("{}/synchronize", ContainerImageUiController::postSynchronize)
-                            add("{}/scan", ContainerImageUiController::getStartScan)
-                        }
-
-                        with("/registries", beforeFunction = ContainerRegistryUiController::requireViewRepositoryPermission) {
-                            add(ContainerRegistryUiController::getAll)
-                            add("{}", ContainerRegistryUiController::getRegistry)
-                        }
-                    }
-
-                    with("/users") {
-                        with(beforeHandler = createRoleGuard(Role.VIEWER)) {
-                            add(UsersUiController::getAll, beforeHandler = createRootRoleGuard(Role.ADMINISTRATOR))
-                        }
-                        add("/{}", UsersUiController::get)
-                    }
-
-                    with("/scans") {
-                        add("/{}", ScansUiController::get)
-
-                        add("/{}/known-vulnerabilities", ScansUiController::getKnownVulnerabilities)
-                        add("/{}/known-vulnerabilities/badge", ScansUiController::getKnownVulnerabilitiesBadge)
-                        add("/{}/known-vulnerabilities/row-details/{}", ScansUiController::getKnownVulnerabilityDetails)
-
-                        add("/{}/oss-packages", ScansUiController::getOssPackages)
-                        add("/{}/oss-packages/badge", ScansUiController::getOssPackagesBadge)
-                        add("/{}/oss-packages/row-details/{}", ScansUiController::getOssPackageDetails)
-
-                        add("/start/{}/{}", StartScanUiController::getStartScan)
-                        add("/start/configure", StartScanUiController::postConfigure)
-                        with("/schedules") {
-                            add("/{}", ScanScheduleUiController::get)
-                        }
-                    }
-
-                    with("/jobs", beforeFunction = ::requireAdministrator) {
-                        add(JobsUiController::getAll)
-                        add("/table/row-details/{}", JobsUiController::getRowDetails)
-                        add("/{}", JobsUiController::get)
-                        add("/{}/restart", JobsUiController::postRestart)
-                    }
                 }
             }
         }
@@ -197,18 +97,17 @@ object UiRoutes {
         }
     }
 
-    fun createRootRoleGuard(vararg role: Role): (RequestContext) -> Unit {
+    fun createRequireAllRoles(role: UserRole, vararg additionalRoles: UserRole): (RequestContext) -> Unit {
         return { context ->
-            if (!context.request.userSession.hasRootRole(*role)) {
+            if (!context.request.userSession.hasAllRole(role, *additionalRoles)) {
                 throw ReturnStatus.Unauthorized401
             }
         }
     }
 
-
-    fun createRoleGuard(vararg role: Role): (RequestContext) -> Unit {
+    fun createRequireAnyRoles(role: UserRole, vararg additionalRoles: UserRole): (RequestContext) -> Unit {
         return { context ->
-            if (!context.request.userSession.hasRole(*role)) {
+            if (!context.request.userSession.hasAnyRole(role, *additionalRoles)) {
                 throw ReturnStatus.Unauthorized401
             }
         }

@@ -1,14 +1,9 @@
 package com.materialcentral.io.ui
 
-import com.materialcentral.MaterialNode
 import com.materialcentral.tag.Tag
 import com.materialcentral.user.User
-import com.materialcentral.user.UserSession
-import com.materialcentral.user.authorization.Role
+import com.materialcentral.user.session.UserSession
 import jakarta.servlet.http.HttpServletRequest
-import org.geezer.db.Data
-import org.geezer.db.schema.DataTable
-import org.geezer.io.ui.findOr404
 import org.geezer.routes.ReturnStatus
 
 val HttpServletRequest.isAuthenticated: Boolean
@@ -28,16 +23,6 @@ val HttpServletRequest.optionalUser: User?
 
 val HttpServletRequest.user: User
     get() = userSession.cachedUser
-
-fun <T : Data> Long.findOr404Or403(table: DataTable<T>, request: HttpServletRequest, role: Role): T where T : MaterialNode {
-    val value = findOr404(table)
-
-    if (!request.userSession.hasRoleFor(value, role)) {
-        throw ReturnStatus.Forbidden403
-    }
-
-    return value
-}
 
 var HttpServletRequest.tags:List<Tag>
     get() = getAttribute("tags") as List<Tag>? ?: listOf()

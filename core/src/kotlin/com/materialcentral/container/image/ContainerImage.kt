@@ -48,10 +48,6 @@ class ContainerImage(
             this(repository.id, digest, shortenDigest(digest), createdAt, null, false, null, null, null, null, null, false, false)
 
 
-    override fun lookupFullName(): String {
-        return ContainerImageCoordinates.findById(id)?.name ?: name
-    }
-
     companion object {
         @JvmField
         val Icon = FontIcon("fa-layer-group", "f5fd")
