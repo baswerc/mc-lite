@@ -16,11 +16,11 @@ import org.geezer.routes.TerminateRouteException
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 
-object ContainerImageUiController : UiController() {
+object ContainerImagesUiController : UiController() {
     override val jspPath: String by lazy { "${ContainerUiController.jspPath}/images" }
 
     fun getImageRowDetails(id: Long, request: HttpServletRequest): String {
-        val (_, _, image) = findImageIfAuthorized(id, request, Role.VIEWER)
+        val (_, _, image) = findImage(id)
 
         request.pageObject = image
         request["tags"] = ContainerImageTagsTable.getActiveTagsForImage(id).map { it.value }
@@ -208,13 +208,11 @@ object ContainerImageUiController : UiController() {
         return setupViewRequest("startScan.jsp", coordinates, request)
     }
 
-    private fun findImageIfAuthorized(id: Long, request: HttpServletRequest, vararg minimumRequiredRole: Role): ContainerImageCoordinates {
-        val coordinates = ContainerImageCoordinates.findById(id) ?: throw ReturnStatus.NotFound404
-
-        if (!request.userSession.hasRoleFor(coordinates.repository, *minimumRequiredRole)) {
-            throw ReturnStatus.Forbidden403
+    private fun findImage(id: Long): ContainerImageCoordinates {
+        val coordinates = ContainerImageCoordinates.findById(id)
+        if (coordinates == null) {
+            throw ReturnStatus.NotFound404
         }
-
         return coordinates
     }
 

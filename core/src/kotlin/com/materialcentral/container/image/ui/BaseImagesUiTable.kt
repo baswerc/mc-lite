@@ -16,13 +16,13 @@ import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 
-abstract class BaseImagesUiTable() : UiTable(rowDetailsColumn = ContainerImagesTable.id, rowDetailsRoute = ContainerImageUiController::getImageRowDetails) {
+abstract class BaseImagesUiTable() : UiTable(rowDetailsColumn = ContainerImagesTable.id, rowDetailsRoute = ContainerImagesUiController::getImageRowDetails) {
 
     override val defaultSort: List<Pair<Column<*>, SortOrder>> = listOf(ContainerImagesTable.createdAt to SortOrder.DESC)
 
     override fun initializeColumns(columns: MutableList<UiColumn>) {
         columns.add(UiColumn("Name", tableColumn = ContainerImagesTable.name) { flowContent, row, request, _ ->
-            flowContent.a(href = UrlGen.url(ContainerImageUiController::getImage, row[ContainerImagesTable.id], request)) { +row[ContainerImagesTable.name] }
+            flowContent.a(href = UrlGen.url(ContainerImagesUiController::getImage, row[ContainerImagesTable.id], request)) { +row[ContainerImagesTable.name] }
         })
 
         columns.add(UiColumn("Architecture", tableColumn = ContainerImagesTable.architecture) { flowContent, row, _, _ ->

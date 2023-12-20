@@ -1,0 +1,402 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "aquasec/trivy",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "alpine",
+      "Name": "3.18.2"
+    },
+    "ImageID": "sha256:b312b2cf66aa14bdeb1b1766fc38acfe82d8a72689f99b947dbaddd92adb2d25",
+    "DiffIDs": [
+      "sha256:78a822fe2a2d2c84f3de4a403188c45f623017d6a4521d23047c9fbb0801794c",
+      "sha256:a84223cbc416f4ba1d9ced072654cc2fc09f8af2143377469f8aa77370dc6684",
+      "sha256:f9a0e808d550315e2051e56357aff922b7436574a2698cd44ed8d595dfd35721",
+      "sha256:de1fad9a447f8ff5bd6d2b00c347d1a657ba6a307b0c3e25571ee0f24256e733"
+    ],
+    "RepoTags": [
+      "aquasec/trivy:latest"
+    ],
+    "RepoDigests": [
+      "aquasec/trivy@sha256:8e1831ca426f152477857e10f02a9e1373aaf7f87966214aba92cdcf431367e1"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2023-08-10T05:38:34.580130139Z",
+      "history": [
+        {
+          "created": "2023-06-14T20:41:58.950178204Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:1da756d12551a0e3e793e02ef87432d69d4968937bd11bed0af215db19dd94cd in / "
+        },
+        {
+          "created": "2023-06-14T20:41:59.079795125Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+          "empty_layer": true
+        },
+        {
+          "created": "2023-08-10T05:38:33.494968755Z",
+          "created_by": "RUN /bin/sh -c apk --no-cache add ca-certificates git # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2023-08-10T05:38:34.550780407Z",
+          "created_by": "COPY trivy /usr/local/bin/trivy # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2023-08-10T05:38:34.580130139Z",
+          "created_by": "COPY contrib/*.tpl contrib/ # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2023-08-10T05:38:34.580130139Z",
+          "created_by": "ENTRYPOINT [\"trivy\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:78a822fe2a2d2c84f3de4a403188c45f623017d6a4521d23047c9fbb0801794c",
+          "sha256:a84223cbc416f4ba1d9ced072654cc2fc09f8af2143377469f8aa77370dc6684",
+          "sha256:f9a0e808d550315e2051e56357aff922b7436574a2698cd44ed8d595dfd35721",
+          "sha256:de1fad9a447f8ff5bd6d2b00c347d1a657ba6a307b0c3e25571ee0f24256e733"
+        ]
+      },
+      "config": {
+        "Entrypoint": [
+          "trivy"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Labels": {
+          "org.opencontainers.image.created": "2023-08-10T05:20:27Z",
+          "org.opencontainers.image.description": "A Fast Vulnerability Scanner for Containers",
+          "org.opencontainers.image.documentation": "https://aquasecurity.github.io/trivy/v0.44.1/",
+          "org.opencontainers.image.revision": "f1052799894cc8a8480ff28e1c717a9d811876a2",
+          "org.opencontainers.image.source": "https://github.com/aquasecurity/trivy",
+          "org.opencontainers.image.title": "trivy",
+          "org.opencontainers.image.url": "https://www.aquasec.com/products/trivy/",
+          "org.opencontainers.image.vendor": "Aqua Security",
+          "org.opencontainers.image.version": "0.44.1"
+        }
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "aquasec/trivy (alpine 3.18.2)",
+      "Class": "os-pkgs",
+      "Type": "alpine",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2023-2975",
+          "PkgID": "libcrypto3@3.1.1-r1",
+          "PkgName": "libcrypto3",
+          "InstalledVersion": "3.1.1-r1",
+          "FixedVersion": "3.1.1-r2",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+            "DiffID": "sha256:78a822fe2a2d2c84f3de4a403188c45f623017d6a4521d23047c9fbb0801794c"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-2975",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
+          "Title": "AES-SIV cipher implementation contains a bug that causes it to ignore empty associated data entries",
+          "Description": "Issue summary: The AES-SIV cipher implementation contains a bug that causes\nit to ignore empty associated data entries which are unauthenticated as\na consequence.\n\nImpact summary: Applications that use the AES-SIV algorithm and want to\nauthenticate empty data entries as associated data can be mislead by removing\nadding or reordering such empty entries as these are ignored by the OpenSSL\nimplementation. We are currently unaware of any such applications.\n\nThe AES-SIV algorithm allows for authentication of multiple associated\ndata entries along with the encryption. To authenticate empty data the\napplication has to call EVP_EncryptUpdate() (or EVP_CipherUpdate()) with\nNULL pointer as the output buffer and 0 as the input buffer length.\nThe AES-SIV implementation in OpenSSL just returns success for such a call\ninstead of performing the associated data authentication operation.\nThe empty data thus will not be authenticated.\n\nAs this issue does not affect non-empty associated data authentication and\nwe expect it to be rare for an application to use empty associated data\nentries this is qualified as Low severity issue.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-287"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2023/07/15/1",
+            "http://www.openwall.com/lists/oss-security/2023/07/19/5",
+            "https://access.redhat.com/security/cve/CVE-2023-2975",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-2975",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=00e2f5eea29994d19293ec4e8c8775ba73678598",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=6a83f0c958811f07e0d11dfc6b5a6a98edfd5bdc",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-2975",
+            "https://security.netapp.com/advisory/ntap-20230725-0004/",
+            "https://www.cve.org/CVERecord?id=CVE-2023-2975",
+            "https://www.openssl.org/news/secadv/20230714.txt"
+          ],
+          "PublishedDate": "2023-07-14T12:15:00Z",
+          "LastModifiedDate": "2023-07-27T13:02:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-3446",
+          "PkgID": "libcrypto3@3.1.1-r1",
+          "PkgName": "libcrypto3",
+          "InstalledVersion": "3.1.1-r1",
+          "FixedVersion": "3.1.1-r3",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+            "DiffID": "sha256:78a822fe2a2d2c84f3de4a403188c45f623017d6a4521d23047c9fbb0801794c"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-3446",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
+          "Title": "Excessive time spent checking DH keys and parameters",
+          "Description": "Issue summary: Checking excessively long DH keys or parameters may be very slow.\n\nImpact summary: Applications that use the functions DH_check(), DH_check_ex()\nor EVP_PKEY_param_check() to check a DH key or DH parameters may experience long\ndelays. Where the key or parameters that are being checked have been obtained\nfrom an untrusted source this may lead to a Denial of Service.\n\nThe function DH_check() performs various checks on DH parameters. One of those\nchecks confirms that the modulus ('p' parameter) is not too large. Trying to use\na very large modulus is slow and OpenSSL will not normally use a modulus which\nis over 10,000 bits in length.\n\nHowever the DH_check() function checks numerous aspects of the key or parameters\nthat have been supplied. Some of those checks use the supplied modulus value\neven if it has already been found to be too large.\n\nAn application that calls DH_check() and supplies a key or parameters obtained\nfrom an untrusted source could be vulernable to a Denial of Service attack.\n\nThe function DH_check() is itself called by a number of other OpenSSL functions.\nAn application calling any of those other functions may similarly be affected.\nThe other functions affected by this are DH_check_ex() and\nEVP_PKEY_param_check().\n\nAlso vulnerable are the OpenSSL dhparam and pkeyparam command line applications\nwhen using the '-check' option.\n\nThe OpenSSL SSL/TLS implementation is not affected by this issue.\nThe OpenSSL 3.0 and 3.1 FIPS providers are not affected by this issue.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-1333"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2023/07/19/4",
+            "http://www.openwall.com/lists/oss-security/2023/07/19/5",
+            "http://www.openwall.com/lists/oss-security/2023/07/19/6",
+            "http://www.openwall.com/lists/oss-security/2023/07/31/1",
+            "https://access.redhat.com/security/cve/CVE-2023-3446",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-3446",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1fa20cf2f506113c761777127a38bce5068740eb",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=8780a896543a654e757db1b9396383f9d8095528",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=9a0a4d3c1e7138915563c0df4fe6a3f9377b839c",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=fc9867c1e03c22ebf56943be205202e576aabf23",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-3446",
+            "https://security.netapp.com/advisory/ntap-20230803-0011/",
+            "https://www.cve.org/CVERecord?id=CVE-2023-3446",
+            "https://www.openssl.org/news/secadv/20230719.txt"
+          ],
+          "PublishedDate": "2023-07-19T12:15:00Z",
+          "LastModifiedDate": "2023-08-03T15:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-3817",
+          "PkgID": "libcrypto3@3.1.1-r1",
+          "PkgName": "libcrypto3",
+          "InstalledVersion": "3.1.1-r1",
+          "FixedVersion": "3.1.2-r0",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+            "DiffID": "sha256:78a822fe2a2d2c84f3de4a403188c45f623017d6a4521d23047c9fbb0801794c"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-3817",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
+          "Title": "Excessive time spent checking DH q parameter value",
+          "Description": "Issue summary: Checking excessively long DH keys or parameters may be very slow.\n\nImpact summary: Applications that use the functions DH_check(), DH_check_ex()\nor EVP_PKEY_param_check() to check a DH key or DH parameters may experience long\ndelays. Where the key or parameters that are being checked have been obtained\nfrom an untrusted source this may lead to a Denial of Service.\n\nThe function DH_check() performs various checks on DH parameters. After fixing\nCVE-2023-3446 it was discovered that a large q parameter value can also trigger\nan overly long computation during some of these checks. A correct q value,\nif present, cannot be larger than the modulus p parameter, thus it is\nunnecessary to perform these checks if q is larger than p.\n\nAn application that calls DH_check() and supplies a key or parameters obtained\nfrom an untrusted source could be vulnerable to a Denial of Service attack.\n\nThe function DH_check() is itself called by a number of other OpenSSL functions.\nAn application calling any of those other functions may similarly be affected.\nThe other functions affected by this are DH_check_ex() and\nEVP_PKEY_param_check().\n\nAlso vulnerable are the OpenSSL dhparam and pkeyparam command line applications\nwhen using the \"-check\" option.\n\nThe OpenSSL SSL/TLS implementation is not affected by this issue.\n\nThe OpenSSL 3.0 and 3.1 FIPS providers are not affected by this issue.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-834"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://seclists.org/fulldisclosure/2023/Jul/43",
+            "http://www.openwall.com/lists/oss-security/2023/07/31/1",
+            "https://access.redhat.com/security/cve/CVE-2023-3817",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-3817",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=6a1eb62c29db6cb5eec707f9338aee00f44e26f5",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=869ad69aadd985c7b8ca6f4e5dd0eb274c9f3644",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=9002fd07327a91f35ba6c1307e71fa6fd4409b7f",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=91ddeba0f2269b017dc06c46c993a788974b1aa5",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-3817",
+            "https://www.cve.org/CVERecord?id=CVE-2023-3817",
+            "https://www.openssl.org/news/secadv/20230731.txt"
+          ],
+          "PublishedDate": "2023-07-31T16:15:00Z",
+          "LastModifiedDate": "2023-08-08T19:04:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-2975",
+          "PkgID": "libssl3@3.1.1-r1",
+          "PkgName": "libssl3",
+          "InstalledVersion": "3.1.1-r1",
+          "FixedVersion": "3.1.1-r2",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+            "DiffID": "sha256:78a822fe2a2d2c84f3de4a403188c45f623017d6a4521d23047c9fbb0801794c"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-2975",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
+          "Title": "AES-SIV cipher implementation contains a bug that causes it to ignore empty associated data entries",
+          "Description": "Issue summary: The AES-SIV cipher implementation contains a bug that causes\nit to ignore empty associated data entries which are unauthenticated as\na consequence.\n\nImpact summary: Applications that use the AES-SIV algorithm and want to\nauthenticate empty data entries as associated data can be mislead by removing\nadding or reordering such empty entries as these are ignored by the OpenSSL\nimplementation. We are currently unaware of any such applications.\n\nThe AES-SIV algorithm allows for authentication of multiple associated\ndata entries along with the encryption. To authenticate empty data the\napplication has to call EVP_EncryptUpdate() (or EVP_CipherUpdate()) with\nNULL pointer as the output buffer and 0 as the input buffer length.\nThe AES-SIV implementation in OpenSSL just returns success for such a call\ninstead of performing the associated data authentication operation.\nThe empty data thus will not be authenticated.\n\nAs this issue does not affect non-empty associated data authentication and\nwe expect it to be rare for an application to use empty associated data\nentries this is qualified as Low severity issue.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-287"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2023/07/15/1",
+            "http://www.openwall.com/lists/oss-security/2023/07/19/5",
+            "https://access.redhat.com/security/cve/CVE-2023-2975",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-2975",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=00e2f5eea29994d19293ec4e8c8775ba73678598",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=6a83f0c958811f07e0d11dfc6b5a6a98edfd5bdc",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-2975",
+            "https://security.netapp.com/advisory/ntap-20230725-0004/",
+            "https://www.cve.org/CVERecord?id=CVE-2023-2975",
+            "https://www.openssl.org/news/secadv/20230714.txt"
+          ],
+          "PublishedDate": "2023-07-14T12:15:00Z",
+          "LastModifiedDate": "2023-07-27T13:02:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-3446",
+          "PkgID": "libssl3@3.1.1-r1",
+          "PkgName": "libssl3",
+          "InstalledVersion": "3.1.1-r1",
+          "FixedVersion": "3.1.1-r3",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+            "DiffID": "sha256:78a822fe2a2d2c84f3de4a403188c45f623017d6a4521d23047c9fbb0801794c"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-3446",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
+          "Title": "Excessive time spent checking DH keys and parameters",
+          "Description": "Issue summary: Checking excessively long DH keys or parameters may be very slow.\n\nImpact summary: Applications that use the functions DH_check(), DH_check_ex()\nor EVP_PKEY_param_check() to check a DH key or DH parameters may experience long\ndelays. Where the key or parameters that are being checked have been obtained\nfrom an untrusted source this may lead to a Denial of Service.\n\nThe function DH_check() performs various checks on DH parameters. One of those\nchecks confirms that the modulus ('p' parameter) is not too large. Trying to use\na very large modulus is slow and OpenSSL will not normally use a modulus which\nis over 10,000 bits in length.\n\nHowever the DH_check() function checks numerous aspects of the key or parameters\nthat have been supplied. Some of those checks use the supplied modulus value\neven if it has already been found to be too large.\n\nAn application that calls DH_check() and supplies a key or parameters obtained\nfrom an untrusted source could be vulernable to a Denial of Service attack.\n\nThe function DH_check() is itself called by a number of other OpenSSL functions.\nAn application calling any of those other functions may similarly be affected.\nThe other functions affected by this are DH_check_ex() and\nEVP_PKEY_param_check().\n\nAlso vulnerable are the OpenSSL dhparam and pkeyparam command line applications\nwhen using the '-check' option.\n\nThe OpenSSL SSL/TLS implementation is not affected by this issue.\nThe OpenSSL 3.0 and 3.1 FIPS providers are not affected by this issue.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-1333"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2023/07/19/4",
+            "http://www.openwall.com/lists/oss-security/2023/07/19/5",
+            "http://www.openwall.com/lists/oss-security/2023/07/19/6",
+            "http://www.openwall.com/lists/oss-security/2023/07/31/1",
+            "https://access.redhat.com/security/cve/CVE-2023-3446",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-3446",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1fa20cf2f506113c761777127a38bce5068740eb",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=8780a896543a654e757db1b9396383f9d8095528",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=9a0a4d3c1e7138915563c0df4fe6a3f9377b839c",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=fc9867c1e03c22ebf56943be205202e576aabf23",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-3446",
+            "https://security.netapp.com/advisory/ntap-20230803-0011/",
+            "https://www.cve.org/CVERecord?id=CVE-2023-3446",
+            "https://www.openssl.org/news/secadv/20230719.txt"
+          ],
+          "PublishedDate": "2023-07-19T12:15:00Z",
+          "LastModifiedDate": "2023-08-03T15:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-3817",
+          "PkgID": "libssl3@3.1.1-r1",
+          "PkgName": "libssl3",
+          "InstalledVersion": "3.1.1-r1",
+          "FixedVersion": "3.1.2-r0",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+            "DiffID": "sha256:78a822fe2a2d2c84f3de4a403188c45f623017d6a4521d23047c9fbb0801794c"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-3817",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
+          "Title": "Excessive time spent checking DH q parameter value",
+          "Description": "Issue summary: Checking excessively long DH keys or parameters may be very slow.\n\nImpact summary: Applications that use the functions DH_check(), DH_check_ex()\nor EVP_PKEY_param_check() to check a DH key or DH parameters may experience long\ndelays. Where the key or parameters that are being checked have been obtained\nfrom an untrusted source this may lead to a Denial of Service.\n\nThe function DH_check() performs various checks on DH parameters. After fixing\nCVE-2023-3446 it was discovered that a large q parameter value can also trigger\nan overly long computation during some of these checks. A correct q value,\nif present, cannot be larger than the modulus p parameter, thus it is\nunnecessary to perform these checks if q is larger than p.\n\nAn application that calls DH_check() and supplies a key or parameters obtained\nfrom an untrusted source could be vulnerable to a Denial of Service attack.\n\nThe function DH_check() is itself called by a number of other OpenSSL functions.\nAn application calling any of those other functions may similarly be affected.\nThe other functions affected by this are DH_check_ex() and\nEVP_PKEY_param_check().\n\nAlso vulnerable are the OpenSSL dhparam and pkeyparam command line applications\nwhen using the \"-check\" option.\n\nThe OpenSSL SSL/TLS implementation is not affected by this issue.\n\nThe OpenSSL 3.0 and 3.1 FIPS providers are not affected by this issue.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-834"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://seclists.org/fulldisclosure/2023/Jul/43",
+            "http://www.openwall.com/lists/oss-security/2023/07/31/1",
+            "https://access.redhat.com/security/cve/CVE-2023-3817",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-3817",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=6a1eb62c29db6cb5eec707f9338aee00f44e26f5",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=869ad69aadd985c7b8ca6f4e5dd0eb274c9f3644",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=9002fd07327a91f35ba6c1307e71fa6fd4409b7f",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=91ddeba0f2269b017dc06c46c993a788974b1aa5",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-3817",
+            "https://www.cve.org/CVERecord?id=CVE-2023-3817",
+            "https://www.openssl.org/news/secadv/20230731.txt"
+          ],
+          "PublishedDate": "2023-07-31T16:15:00Z",
+          "LastModifiedDate": "2023-08-08T19:04:00Z"
+        }
+      ]
+    }
+  ]
+}

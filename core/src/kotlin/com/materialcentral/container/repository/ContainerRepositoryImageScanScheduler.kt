@@ -1,6 +1,6 @@
 package com.materialcentral.container.repository
 
-import com.materialcentral.LocationsTable
+import com.materialcentral.DataStringsTable
 import com.materialcentral.container.image.ContainerImageDeploymentsTable
 import com.materialcentral.container.image.ContainerImageTagsTable
 import com.materialcentral.container.image.ContainerImagesTable
@@ -17,25 +17,25 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 
 object ContainerRepositoryImageScanScheduler {
     fun scheduleImageScan(containerRepository: ContainerRepository, schedule: ScanSchedule) {
-        if (!schedule.scanAllMaterials && !schedule.scanDefaultMaterial && schedule.scanMaterialsInEnvironmentIds.isEmpty() && schedule.scanMaterialNamePatterns.isEmpty()) {
+        if (!schedule.scanAllTargets && !schedule.scanDefaultTarget && schedule.scanTargetInEnvironmentIds.isEmpty() && schedule.scanTargetNamePatterns.isEmpty()) {
             return
         }
 
         var imageFilter: Op<Boolean> = ContainerImagesTable.containerRepositoryId eq containerRepository.id
-        if (!schedule.scanAllMaterials) {
+        if (!schedule.scanAllTargets) {
             var imageFilters = mutableListOf<Op<Boolean>>()
-            if (schedule.scanDefaultMaterial) {
+            if (schedule.scanDefaultTarget) {
                 imageFilter = imageFilter and (ContainerImagesTable.latestInRepository eq true)
             }
 
-            if (schedule.scanMaterialsInEnvironmentIds.isNotEmpty()) {
+            if (schedule.scanTargetInEnvironmentIds.isNotEmpty()) {
                 imageFilter = imageFilter and exists(ContainerImageDeploymentsTable.slice(ContainerImageDeploymentsTable.id).select { (ContainerImageDeploymentsTable.containerImageId eq ContainerImagesTable.id) and
-                        (ContainerImageDeploymentsTable.undeployedAt eq null) and (ContainerImageDeploymentsTable.environmentId inList schedule.scanMaterialsInEnvironmentIds)})
+                        (ContainerImageDeploymentsTable.undeployedAt eq null) and (ContainerImageDeploymentsTable.environmentId inList schedule.scanTargetInEnvironmentIds)})
             }
 
-            if (schedule.scanMaterialNamePatterns.isNotEmpty()) {
+            if (schedule.scanTargetNamePatterns.isNotEmpty()) {
                 imageFilter = imageFilter and exists(ContainerImageTagsTable.slice(ContainerImageTagsTable.id).select { (ContainerImageTagsTable.removedAt eq null) and
-                        (ContainerImageTagsTable.containerImageId eq ContainerImagesTable.id) and (ContainerImageTagsTable.value ilike schedule.scanMaterialNamePatterns)})
+                        (ContainerImageTagsTable.containerImageId eq ContainerImagesTable.id) and (ContainerImageTagsTable.value ilike schedule.scanTargetNamePatterns)})
             }
         }
 
@@ -60,7 +60,7 @@ object ContainerRepositoryImageScanScheduler {
                 if (endedAt != null) {
                     if (minHoursBetweenScans >= RuntimeClock.hoursAgo(endedAt)) {
                         containerImageCandidates.removeIf { it.first == containerImageId }
-                        val scanNameId = LocationsTable.getOrCreate("$repositoryHostname/${containerRepository.name}/${containerImageName}")
+                        val scanNameId = DataStringsTable.getOrCreate("$repositoryHostname/${containerRepository.name}/${containerImageName}")
                         ScansTable.create(Scan(containerRepository.id, ScanTargetType.CONTAINER_IMAGE, containerImageId, scanNameId, schedule.medium, schedule.scanConfiguration, schedule.id))
                     } else {
                         containerImageCandidates.removeIf { it.first == containerImageId }                    }
@@ -72,10 +72,10 @@ object ContainerRepositoryImageScanScheduler {
         for (index in containerImageCandidates.indices.reversed()) {
             val (imageId, imageName) = containerImageCandidates[index]
             containerImageCandidates.removeAt(index)
-            val scanNameId = LocationsTable.getOrCreate("$repositoryHostname/${containerRepository.name}/${imageName}")
+            val scanNameId = DataStringsTable.getOrCreate("$repositoryHostname/${containerRepository.name}/${imageName}")
             ScansTable.create(Scan(containerRepository.id, ScanTargetType.CONTAINER_IMAGE, imageId, scanNameId, schedule.medium, schedule.scanConfiguration, schedule.id))
         }
 
-        schedule.scanMaterialsInEnvironmentIds
+        schedule.scanTargetInEnvironmentIds
     }
 }

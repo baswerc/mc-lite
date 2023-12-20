@@ -1,6 +1,6 @@
 package com.materialcentral.container.image.metadata
 
-import com.materialcentral.LocationsTable
+import com.materialcentral.DataStringsTable
 import org.geezer.db.FilteredUpdateStatement
 import org.geezer.db.schema.referencesWithStandardNameAndIndex
 import com.materialcentral.oss.DigestsTable
@@ -13,7 +13,7 @@ object ContainerImageOssPackageReleasesTable : ContainerImageMetadataTable<Conta
 
     val ossPackageReleaseId = long("oss_package_release_id").referencesWithStandardNameAndIndex(OssPackageReleasesTable.id, ReferenceOption.CASCADE)
 
-    override val filePathId = long("file_path_id").referencesWithStandardNameAndIndex(LocationsTable.id, ReferenceOption.NO_ACTION).nullable()
+    override val filePathId = long("file_path_id").referencesWithStandardNameAndIndex(DataStringsTable.id, ReferenceOption.NO_ACTION).nullable()
 
     val sizeBytes = long("size_bytes").nullable()
 

@@ -15,18 +15,18 @@ class ContainerImageCommentsUiList(val containerImageId: Long) : CommentUiList<C
     }
 
     override fun createGetCommentsUrl(request: HttpServletRequest): String {
-        return UrlGen.url(ContainerImageUiController::getCommentsList, containerImageId, request)
+        return UrlGen.url(ContainerImagesUiController::getCommentsList, containerImageId, request)
     }
 
     override fun createAddCommentUrl(request: HttpServletRequest): String {
-        return UrlGen.url(ContainerImageUiController::postCreateComment, containerImageId, request)
+        return UrlGen.url(ContainerImagesUiController::postCreateComment, containerImageId, request)
     }
 
     override fun createUpdateCommentUrl(request: HttpServletRequest): String {
-        return UrlGen.url(ContainerImageUiController::postUpdateComment, containerImageId, request)
+        return UrlGen.url(ContainerImagesUiController::postUpdateComment, containerImageId, request)
     }
 
     override fun createDeleteCommentUrl(request: HttpServletRequest): String {
-        return UrlGen.url(ContainerImageUiController::postDeleteComment, containerImageId, request)
+        return UrlGen.url(ContainerImagesUiController::postDeleteComment, containerImageId, request)
     }
 }

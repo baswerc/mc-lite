@@ -9,7 +9,7 @@ import org.geezer.io.ui.Linkable
 import com.materialcentral.repository.container.ContainerName
 import com.materialcentral.repository.container.ContainerRepositoriesTable
 import com.materialcentral.repository.container.ContainerRepository
-import com.materialcentral.container.image.ui.ContainerImageUiController
+import com.materialcentral.container.image.ui.ContainerImagesUiController
 import com.materialcentral.repository.container.registry.ContainerRegistriesTable
 import com.materialcentral.repository.container.registry.ContainerRegistry
 import com.materialcentral.repository.container.registry.ContainerRegistryCache
@@ -27,7 +27,7 @@ class ContainerImageCoordinates(
 
     val layers: List<ContainerImageLayer> by lazy { ContainerImageLayersTable.findOrderedLayersForImage(image.id) }
 
-    override val route: KFunction<*> = ContainerImageUiController::getImage
+    override val route: KFunction<*> = ContainerImagesUiController::getImage
 
     override val id: Long = image.id
 

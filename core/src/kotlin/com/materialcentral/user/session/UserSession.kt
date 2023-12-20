@@ -1,5 +1,7 @@
 package com.materialcentral.user.session
 
+import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
 import com.materialcentral.io.ui.DropdownMenuBuilder
 import com.materialcentral.io.ui.Sidebar
 import com.materialcentral.user.User
@@ -40,7 +42,11 @@ class UserSession(
 
 
     fun hasAnyRole(role: UserRole, vararg additionalRoles: UserRole): Boolean {
-        return (additionalRoles.toList() + role).any { hasRole(it) }
+        return hasAnyRole(nonEmptyListOf(role, *additionalRoles))
+    }
+
+    fun hasAnyRole(roles: NonEmptyList<UserRole>): Boolean {
+        return roles.any { hasRole(it) }
     }
 
     fun hasAllRole(role: UserRole, vararg additionalRoles: UserRole): Boolean {

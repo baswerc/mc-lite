@@ -1,6 +1,6 @@
 package com.materialcentral.db
 
-import com.materialcentral.LocationsTable
+import com.materialcentral.DataStringsTable
 import org.geezer.settings.SettingsTable
 import com.materialcentral.container.image.ContainerImagesTable
 import com.materialcentral.container.registry.ContainerRegistriesTable
@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.Table
 
 object Schema : AppSchema() {
     override val tables: List<Table> = listOf(
-        LocationsTable,
+        DataStringsTable,
         SettingsTable,
 
         ContainerRegistriesTable,

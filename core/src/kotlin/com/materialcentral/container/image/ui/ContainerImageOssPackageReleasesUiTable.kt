@@ -1,6 +1,6 @@
 package com.materialcentral.container.image.ui
 
-import com.materialcentral.LocationsTable
+import com.materialcentral.DataStringsTable
 import org.geezer.db.schema.ilike
 import org.geezer.io.ui.UI
 import org.geezer.io.ui.table.UiColumn
@@ -51,12 +51,12 @@ class ContainerImageOssPackageReleasesUiTable(val containerImageId: Long) : OssP
 
         if (!searchQuery.isNullOrBlank()) {
             where = where and ((OssPackagesTable.name ilike searchQuery) or (OssPackageReleasesTable.version ilike searchQuery) or
-                    (OssProjectsTable.organization ilike searchQuery) or (OssProjectsTable.repository ilike searchQuery) or (LocationsTable.location ilike searchQuery))
+                    (OssProjectsTable.organization ilike searchQuery) or (OssProjectsTable.repository ilike searchQuery) or (DataStringsTable.value ilike searchQuery))
         }
 
         where = addPackageFilters(where, parameters)
 
         return ContainerImageOssPackageReleasesTable.innerJoin(OssPackageReleasesTable, { ossPackageReleaseId }, { id }).innerJoin(OssPackagesTable, { OssPackageReleasesTable.ossPackageId }, { id })
-            .leftJoin(OssProjectsTable, { OssPackagesTable.projectId }, { id }).leftJoin(LocationsTable, { ContainerImageOssPackageReleasesTable.filePathId}, { id }).select(where)
+            .leftJoin(OssProjectsTable, { OssPackagesTable.projectId }, { id }).leftJoin(DataStringsTable, { ContainerImageOssPackageReleasesTable.filePathId}, { id }).select(where)
     }
 }

@@ -3,6 +3,8 @@ package com.materialcentral.container.repository
 import org.geezer.db.FilteredUpdateStatement
 import org.geezer.db.schema.referencesWithStandardNameAndIndex
 import com.materialcentral.container.registry.ContainerRegistriesTable
+import com.materialcentral.scan.filter.ScanFindingFilterOwnersTable
+import com.materialcentral.scan.filter.ScanFindingFiltersTable
 import org.geezer.db.schema.DataTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.ResultRow
@@ -30,6 +32,10 @@ object ContainerRepositoriesTable : DataTable<ContainerRepository>("container_re
     val addedAt = long("added_at")
 
     val active = active()
+
+    init {
+        addDynamicForeignKey(ScanFindingFilterOwnersTable.scanTargetSourceId)
+    }
 
     override fun mapDataToStatement(repository: ContainerRepository, statement: FilteredUpdateStatement, insert: Boolean) {
         statement[containerRegistryId] = repository.containerRegistryId

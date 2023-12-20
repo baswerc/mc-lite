@@ -1,6 +1,6 @@
 package com.materialcentral.container.image.metadata
 
-import com.materialcentral.LocationsTable
+import com.materialcentral.DataStringsTable
 import org.geezer.db.FilteredUpdateStatement
 import org.geezer.db.schema.referencesWithStandardNameAndIndex
 import com.materialcentral.scan.analysis.secret.SecretTypesTable
@@ -12,7 +12,7 @@ object ContainerImageSecretsTable : ContainerImageMetadataTable<ContainerImageSe
 
     val secretTypeId = long("secret_type_id").referencesWithStandardNameAndIndex(SecretTypesTable.id, ReferenceOption.CASCADE)
 
-    override val filePathId = long("file_path_id").referencesWithStandardNameAndIndex(LocationsTable.id, ReferenceOption.NO_ACTION)
+    override val filePathId = long("file_path_id").referencesWithStandardNameAndIndex(DataStringsTable.id, ReferenceOption.NO_ACTION)
 
     override val metadataId: Column<Long> = secretTypeId
 

@@ -1,14 +1,14 @@
 package com.materialcentral.container.image
 
 import org.geezer.io.ui.FontIcon
-import org.geezer.io.ui.HasIcon
 import org.geezer.io.ui.Linkable
 import com.materialcentral.os.Architecture
 import com.materialcentral.os.LinuxDistribution
 import com.materialcentral.os.OperatingSystemType
-import com.materialcentral.container.image.ui.ContainerImageUiController
+import com.materialcentral.container.image.ui.ContainerImagesUiController
 import com.materialcentral.container.repository.ContainerRepository
-import org.geezer.HasName
+import com.materialcentral.scan.ScanTarget
+import com.materialcentral.scan.ScanTargetType
 import org.geezer.db.Data
 import org.geezer.io.ui.HasNameIcon
 import org.geezer.system.runtime.RuntimeClock
@@ -28,9 +28,11 @@ class ContainerImage(
     var bytesSize: Long?,
     var latestInRepository: Boolean,
     var deletedFromRepository: Boolean
-) : Data(), Linkable, HasNameIcon {
+) : Data(), Linkable, HasNameIcon, ScanTarget {
 
-    override val route: KFunction<*> = ContainerImageUiController::getImage
+    override val scanTargetType: ScanTargetType = ScanTargetType.CONTAINER_IMAGE
+
+    override val route: KFunction<*> = ContainerImagesUiController::getImage
 
     override val icon: FontIcon = Icon
 

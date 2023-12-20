@@ -8,6 +8,7 @@ import org.geezer.db.schema.uniqueIndexWithStandardName
 import com.materialcentral.os.Architecture
 import com.materialcentral.os.LinuxDistribution
 import com.materialcentral.os.OperatingSystemType
+import com.materialcentral.scan.ScansTable
 import org.geezer.db.schema.DataTable
 import org.jetbrains.exposed.sql.*
 
@@ -38,6 +39,10 @@ object ContainerImagesTable : DataTable<ContainerImage>("container_images") {
     val latestInRepository = bool("latest_in_repository")
 
     val deletedFromRepository = bool("deleted_from_repository")
+
+    init {
+        addDynamicForeignKey(ScansTable.scanTargetId)
+    }
 
     fun findLatestImagesFor(containerRepositoryId: Long): List<ContainerImage> {
         return findWhere { (ContainerImagesTable.containerRepositoryId eq containerRepositoryId) and (latestInRepository eq true) }

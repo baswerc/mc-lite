@@ -3,6 +3,7 @@ package com.materialcentral.container.repository
 import org.geezer.io.ui.FontIcon
 import com.materialcentral.container.registry.ContainerRegistry
 import com.materialcentral.container.repository.ui.ContainerRepositoryUiController
+import com.materialcentral.scan.ScanTargetSource
 import org.geezer.db.Data
 import org.geezer.io.ui.HasNameDescriptionIcon
 import org.geezer.io.ui.Linkable
@@ -20,7 +21,7 @@ class ContainerRepository(
     var latestImageUploadedAt: Long?,
     var active: Boolean,
     var addedAt: Long,
-) : Data(), HasNameDescriptionIcon, Linkable {
+) : Data(), HasNameDescriptionIcon, ScanTargetSource {
 
     override val icon: FontIcon = Icon
 

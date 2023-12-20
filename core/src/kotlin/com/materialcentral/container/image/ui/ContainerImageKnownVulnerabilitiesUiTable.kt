@@ -1,6 +1,6 @@
 package com.materialcentral.container.image.ui
 
-import com.materialcentral.LocationsTable
+import com.materialcentral.DataStringsTable
 import org.geezer.db.schema.ilike
 import org.geezer.io.ui.FontIcon
 import org.geezer.io.ui.UI
@@ -45,13 +45,13 @@ class ContainerImageKnownVulnerabilitiesUiTable(val containerImageId: Long) : Kn
         var where: Op<Boolean> = ContainerImageKnownVulnerabilitiesTable.containerImageId eq containerImageId
 
         if (!searchQuery.isNullOrBlank()) {
-            where = where and ((KnownVulnerabilitiesTable.title ilike searchQuery) or (KnownVulnerabilitiesTable.description ilike searchQuery) or (LocationsTable.location ilike searchQuery))
+            where = where and ((KnownVulnerabilitiesTable.title ilike searchQuery) or (KnownVulnerabilitiesTable.description ilike searchQuery) or (DataStringsTable.value ilike searchQuery))
         }
 
         where = addVulnerabilityFilters(where, parameters)
 
 
         return ContainerImageKnownVulnerabilitiesTable.innerJoin(KnownVulnerabilitiesTable, { knownVulnerabilityId }, { id }).innerJoin(OssPackageReleasesTable, { ContainerImageKnownVulnerabilitiesTable.ossPackageReleaseId }, { id })
-            .innerJoin(OssPackagesTable, { OssPackageReleasesTable.ossPackageId }, { id }).leftJoin(LocationsTable, {ContainerImageKnownVulnerabilitiesTable.filePathId}, { id }).select(where)
+            .innerJoin(OssPackagesTable, { OssPackageReleasesTable.ossPackageId }, { id }).leftJoin(DataStringsTable, {ContainerImageKnownVulnerabilitiesTable.filePathId}, { id }).select(where)
     }
 }
