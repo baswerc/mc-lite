@@ -40,6 +40,8 @@ object ContainerImagesTable : DataTable<ContainerImage>("container_images") {
 
     val deletedFromRepository = bool("deleted_from_repository")
 
+    val lastSynchronizedAt = long("last_synchronized_at").nullable()
+
     init {
         addDynamicForeignKey(ScansTable.scanTargetId)
     }
@@ -76,10 +78,11 @@ object ContainerImagesTable : DataTable<ContainerImage>("container_images") {
         statement[bytesSize] = image.bytesSize
         statement[latestInRepository] = image.latestInRepository
         statement[deletedFromRepository] = image.deletedFromRepository
+        statement[lastSynchronizedAt] = image.lastSynchronizedAt
     }
 
     override fun constructData(row: ResultRow): ContainerImage {
         return ContainerImage(row[containerRepositoryId], row[digest], row[name], row[createdAt], row[baseContainerImageId], row[baseImage],
-            row[os], row[osVersion], row[linuxDistribution], row[architecture], row[bytesSize], row[latestInRepository], row[deletedFromRepository])
+            row[os], row[osVersion], row[linuxDistribution], row[architecture], row[bytesSize], row[latestInRepository], row[deletedFromRepository], row[lastSynchronizedAt])
     }
 }

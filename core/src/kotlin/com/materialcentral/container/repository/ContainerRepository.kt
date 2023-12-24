@@ -6,7 +6,6 @@ import com.materialcentral.container.repository.ui.ContainerRepositoryUiControll
 import com.materialcentral.scan.ScanTargetSource
 import org.geezer.db.Data
 import org.geezer.io.ui.HasNameDescriptionIcon
-import org.geezer.io.ui.Linkable
 import org.geezer.system.runtime.RuntimeClock
 import kotlin.reflect.KFunction
 
@@ -16,7 +15,8 @@ class ContainerRepository(
     override var description: String?,
     var baseContainerRepositoryId: Long?,
     var baseContainerRepository: Boolean,
-    var imagesLastSynchronizedAt: Long?,
+    var lastNewImagesCheckAt: Long?,
+    var lastFullSynchronizationAt: Long?,
     var existsInRegistry: Boolean?,
     var latestImageUploadedAt: Long?,
     var active: Boolean,
@@ -28,7 +28,7 @@ class ContainerRepository(
     override val route: KFunction<*> = ContainerRepositoryUiController::getRepository
 
     constructor(registry: ContainerRegistry,  name: String = "", description: String? = null, existsInRegistry: Boolean? = false, latestImageUploadedAt: Long? = null, active: Boolean = true)
-            : this(registry.id, name, description,  null, false, null, existsInRegistry, null,active, RuntimeClock.transactionAt )
+            : this(registry.id, name, description,  null, false, null, null, existsInRegistry, null, active, RuntimeClock.transactionAt )
 
     companion object {
         @JvmField

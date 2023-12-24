@@ -1,4 +1,4 @@
-package com.materialcentral.scan.schedule
+package com.materialcentral.schedule
 
 import arrow.core.Either
 import arrow.core.left
@@ -6,16 +6,17 @@ import arrow.core.right
 import com.beust.klaxon.JsonObject
 import org.geezer.json.Jsonable
 import org.geezer.db.schema.JsonObjectDecoder
+import org.geezer.json.JsonableObject
 import org.geezer.system.runtime.IntProperty
 import org.geezer.system.runtime.RuntimeClock
 import org.jetbrains.exposed.sql.Column
 import java.util.*
 
-class ScanTimeRange(
+class TimeRange(
     val fromHour: Int,
     val fromMinute: Int,
     val toHour: Int,
-    val toMinute: Int) : Jsonable {
+    val toMinute: Int) : JsonableObject {
 
     constructor() : this(defaultFromHours(), defaultFromMinutes(), defaultToHours(), defaultToMinutes())
 
@@ -46,7 +47,7 @@ class ScanTimeRange(
         }
     }
 
-    companion object : JsonObjectDecoder<ScanTimeRange> {
+    companion object : JsonObjectDecoder<TimeRange> {
         val defaultFromHours = IntProperty("ScanScheduleFromHourDefault", 0)
 
         val defaultFromMinutes = IntProperty("ScanScheduleFromMinuteDefault", 0)
@@ -54,15 +55,15 @@ class ScanTimeRange(
         val defaultToHours = IntProperty("ScanScheduleFromHourDefault", 23)
 
         val defaultToMinutes = IntProperty("ScanScheduleFromMinuteDefault", 59)
-        override fun createDefault(): ScanTimeRange {
-            return ScanTimeRange()
+        override fun createDefault(): TimeRange {
+            return TimeRange()
         }
 
-        override fun decode(json: JsonObject, column: Column<*>, attributes: Map<String, Any>): Either<String, ScanTimeRange> {
+        override fun decode(json: JsonObject, column: Column<*>, attributes: Map<String, Any>): Either<String, TimeRange> {
             return map(json)
         }
 
-        fun map(json: JsonObject): Either<String, ScanTimeRange> {
+        fun map(json: JsonObject): Either<String, TimeRange> {
             var fromHour = json.int("fromHour")
             if (fromHour == null) {
                 return "Missing fromHour property.".left()
@@ -83,7 +84,7 @@ class ScanTimeRange(
                 return "Missing toMinute property.".left()
             }
 
-            return ScanTimeRange(fromHour, fromMinute, toHour, toMinute).right()
+            return TimeRange(fromHour, fromMinute, toHour, toMinute).right()
         }
     }
 }

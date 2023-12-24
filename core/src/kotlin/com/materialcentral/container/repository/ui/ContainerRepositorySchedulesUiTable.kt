@@ -1,18 +1,15 @@
 package com.materialcentral.container.repository.ui
 
 import com.materialcentral.CandidateMatchType
-import com.materialcentral.container.repository.ContainerRepositoriesTable
 import com.materialcentral.container.repository.ContainerRepository
 import com.materialcentral.container.repository.ContainerRepositoryTagsTable
 import com.materialcentral.scan.ScanTargetSourceType
-import com.materialcentral.scan.schedule.ScanScanScheduleTagsTable
+import com.materialcentral.scan.schedule.ScanScheduleTagsTable
 import com.materialcentral.scan.schedule.ScanSchedule
 import com.materialcentral.scan.schedule.ScanScheduleOwnersTable
 import com.materialcentral.scan.schedule.ScanSchedulesTable
 import jakarta.servlet.http.HttpServletRequest
-import kotlinx.html.FlowContent
 import kotlinx.html.a
-import kotlinx.html.span
 import org.geezer.db.schema.contains
 import org.geezer.db.schema.ilike
 import org.geezer.db.schema.isTrue
@@ -24,7 +21,7 @@ import org.geezer.routes.urls.UrlGen
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class ContainerRepositoryScanSchedulesUiTable(val containerRepository: ContainerRepository) : UiTable(ScanSchedulesTable.id) {
+class ContainerRepositorySchedulesUiTable(val containerRepository: ContainerRepository) : UiTable(ScanSchedulesTable.id) {
 
     override val defaultSort: List<Pair<Column<*>, SortOrder>> = listOf(ScanSchedulesTable.name to SortOrder.ASC)
 
@@ -49,8 +46,8 @@ class ContainerRepositoryScanSchedulesUiTable(val containerRepository: Container
                 (((ScanSchedulesTable.candidateMatchType eq CandidateMatchType.ALL) and (ScanSchedulesTable.scanTargetSourceTypes contains ScanTargetSourceType.CONTAINER_REPOSITORY)) or
 
                 ((ScanSchedulesTable.candidateMatchType eq CandidateMatchType.MATCHED_TAGS) and (ScanSchedulesTable.scanTargetSourceTypes contains ScanTargetSourceType.CONTAINER_REPOSITORY) and
-                    (exists(ScanScanScheduleTagsTable.select { (ScanScanScheduleTagsTable.scanScheduleId eq ScanSchedulesTable.id) and exists(
-                        ContainerRepositoryTagsTable.select { (ContainerRepositoryTagsTable.tagId eq ScanScanScheduleTagsTable.tagId) and (ContainerRepositoryTagsTable.containerRepositoryId eq containerRepository.id) }
+                    (exists(ScanScheduleTagsTable.select { (ScanScheduleTagsTable.scanScheduleId eq ScanSchedulesTable.id) and exists(
+                        ContainerRepositoryTagsTable.select { (ContainerRepositoryTagsTable.tagId eq ScanScheduleTagsTable.tagId) and (ContainerRepositoryTagsTable.containerRepositoryId eq containerRepository.id) }
                     )}))) or
 
                 ((ScanSchedulesTable.candidateMatchType eq CandidateMatchType.ASSIGNED) and exists(

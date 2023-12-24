@@ -4,6 +4,8 @@ import com.materialcentral.CandidateMatchType
 import com.materialcentral.scan.ScanConfiguration
 import com.materialcentral.scan.ScanMedium
 import com.materialcentral.scan.ScanTargetSourceType
+import com.materialcentral.schedule.DaysOfWeek
+import com.materialcentral.schedule.TimeRange
 import org.geezer.db.FilteredUpdateStatement
 import org.geezer.db.schema.*
 import org.jetbrains.exposed.sql.ResultRow
@@ -28,9 +30,9 @@ object ScanSchedulesTable : DataTable<ScanSchedule>("repository_scan_schedules")
 
     val minimumHoursBetweenScans = integer("minimum_hours_between_scans").nullable()
 
-    val scanTimeRange = encodedJson("scan_time", ScanTimeRange).nullable()
+    val timeRange = encodedJson("scan_time", TimeRange).nullable()
 
-    val scanDays = encodedJson("scan_days", ScanDays).nullable()
+    val scanDays = encodedJson("scan_days", DaysOfWeek).nullable()
 
     val scanAllTargets = bool("scan_all_target")
 
@@ -52,7 +54,7 @@ object ScanSchedulesTable : DataTable<ScanSchedule>("repository_scan_schedules")
         statement[scanConfiguration] = schedule.scanConfiguration
         statement[contributeToTargetMetadata] = schedule.contributeToTargetMetadata
         statement[minimumHoursBetweenScans] = schedule.minimumHoursBetweenScans
-        statement[scanTimeRange] = schedule.scanTimeRange
+        statement[timeRange] = schedule.timeRange
         statement[scanDays] = schedule.scanDays
         statement[scanAllTargets] = schedule.scanAllTargets
         statement[scanDefaultTarget] = schedule.scanDefaultTarget
@@ -63,6 +65,6 @@ object ScanSchedulesTable : DataTable<ScanSchedule>("repository_scan_schedules")
 
     override fun constructData(row: ResultRow): ScanSchedule {
         return ScanSchedule(row[name], row[description], row[active], row[candidateMatchType], row[scanTargetSourceTypes], row[medium], row[scanConfiguration], row[contributeToTargetMetadata], row[minimumHoursBetweenScans],
-            row[scanTimeRange], row[scanDays], row[scanAllTargets], row[scanDefaultTarget], row[scanTargetNamePatterns], row[scanTargetEnvironmentIds], row[scanNewTargetsImmediately])
+            row[timeRange], row[scanDays], row[scanAllTargets], row[scanDefaultTarget], row[scanTargetNamePatterns], row[scanTargetEnvironmentIds], row[scanNewTargetsImmediately])
     }
 }

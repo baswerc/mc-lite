@@ -1,9 +1,16 @@
 package com.materialcentral.container.repository.ui
 
 import com.materialcentral.container.ContainerUiController
+import com.materialcentral.container.image.ContainerImagesTable
+import com.materialcentral.container.registry.ContainerRegistriesTable
+import com.materialcentral.container.registry.ContainerRegistry
 import com.materialcentral.container.repository.ContainerRepositoriesTable
+import com.materialcentral.container.repository.ContainerRepository
 import com.materialcentral.container.repository.ContainerRepositoryCoordinates
 import com.materialcentral.container.repository.ContainerRepositoryTagsTable
+import com.materialcentral.container.repository.task.ContainerRepositorySynchronizationTask
+import com.materialcentral.container.repository.task.ContainerRepositorySynchronizationTasksTable
+import com.materialcentral.io.ui.tags
 import org.geezer.io.ui.table.isUiTableRequest
 import org.geezer.system.runtime.RuntimeClock
 import jakarta.servlet.http.HttpServletRequest
@@ -29,12 +36,12 @@ object ContainerRepositoryUiController : UiController() {
     @JvmField
     val GetAllRoute = ::getAll
     fun getAll(request: HttpServletRequest, parameters: RequestParameters, response: HttpServletResponse): String {
-        return if (request.isUiTableRequest) {
+        if (request.isUiTableRequest) {
             ContainerRepositoryUiTable.toHTML(request, parameters, response)
             throw TerminateRouteException(true)
-        } else {
-            indexJsp
         }
+
+        return indexJsp
     }
 
     fun getAllTableDetail(id: Long, request: HttpServletRequest): String {
@@ -46,54 +53,42 @@ object ContainerRepositoryUiController : UiController() {
     @JvmField
     val GetRepositoryRoute = ::getRepository
     fun getRepository(id: Long, request: HttpServletRequest): String {
-        val repository = id.findOr404(ContainerRepositoriesTable)
-        request.pageObject = repository
-        request["tags"] = ContainerRepositoryTagsTable.findCachedTagsFor(id)
-        return viewJsp
+        return setupViewRequest("attributes.jsp", findContainerRepository(id, request), request)
     }
 
     @JvmField
     val GetImagesRoute = ::getImages
     fun getImages(id: Long, request: HttpServletRequest, parameters: RequestParameters, response: HttpServletResponse): String {
-        val coordinates = findContainerRepository(id, request, Role.VIEWER)
+        val coordinates = findContainerRepository(id, request)
         val table = ContainerRepositoryImagesUiTable(coordinates.repository)
 
-        return if (request.isUiTableRequest) {
+        if (request.isUiTableRequest) {
             table.toHTML(request, parameters, response)
             throw TerminateRouteException()
-        } else {
-            request["table"] = table
-            setupViewRequest("images.jsp", coordinates, request)
         }
-    }
 
-    fun getImagesTable(id: Long, request: HttpServletRequest, parameters: RequestParameters, response: HttpServletResponse) {
-        val (_, repository) = findContainerRepository(id, request, Role.VIEWER)
-        return ContainerRepositoryImagesUiTable(repository).toHTML(request, parameters, response)
+        request["table"] = table
+        return setupViewRequest("images.jsp", coordinates, request)
     }
 
     @JvmField
-    val ImagesBadgeRoute = ::getImagesBadge
+    val GetImagesBadgeRoute = ::getImagesBadge
     fun getImagesBadge(id: Long, request: HttpServletRequest, response: HttpServletResponse) {
-        val (_, repository) = findContainerRepository(id, request, Role.VIEWER)
-
         val count = ContainerImagesTable.select { ContainerImagesTable.containerRepositoryId eq id }.count()
-        response.writer.appendHTML().span("badge text-bg-secondary float-end") {
-            text(UI.formatNumber(count))
-        }
+        response.writer.appendHTML().badge(UI.formatNumber(count))
     }
 
     @JvmField
     val PoliciesRoute = ::getPolicies
     fun getPolicies(id: Long, request: HttpServletRequest, parameters: RequestParameters, response: HttpServletResponse): String {
-        val coordinates = findContainerRepository(id, request, Role.VIEWER)
+        val coordinates = findContainerRepository(id, request)
         return setupViewRequest("policies.jsp", coordinates, request)
     }
 
     @JvmField
     val PoliciesBadgeRoute = ::getPoliciesBadge
     fun getPoliciesBadge(id: Long, request: HttpServletRequest, response: HttpServletResponse) {
-        val (_, repository) = findContainerRepository(id, request, Role.VIEWER)
+        val (_, repository) = findContainerRepository(id, request)
         response.writer.appendHTML().span("badge text-bg-secondary float-end") {
             text(UI.formatNumber(24))
         }
@@ -102,14 +97,14 @@ object ContainerRepositoryUiController : UiController() {
     @JvmField
     val ViolationsRoute = ::getViolations
     fun getViolations(id: Long, request: HttpServletRequest, parameters: RequestParameters, response: HttpServletResponse): String {
-        val coordinates = findContainerRepository(id, request, Role.VIEWER)
+        val coordinates = findContainerRepository(id, request)
         return setupViewRequest("violations.jsp", coordinates, request)
     }
 
     @JvmField
     val ViolationsBadgeRoute = ::getViolationsBadge
     fun getViolationsBadge(id: Long, request: HttpServletRequest, response: HttpServletResponse) {
-        val (_, repository) = findContainerRepository(id, request, Role.VIEWER)
+        val (_, repository) = findContainerRepository(id, request)
         response.writer.appendHTML().span("float-end") {
             span("ms-1 badge bg-danger") { text("5 C")}
             span("ms-1 badge bg-warning") { text("12 H")}
@@ -117,10 +112,17 @@ object ContainerRepositoryUiController : UiController() {
     }
 
     @JvmField
-    val SynchronizeImagesRoute = ::postSynchronizeImages
-    fun postSynchronizeImages(id: Long, request: HttpServletRequest): String {
-        val (_, repository) = findContainerRepository(id, request, Role.OWNER)
-        return ContainerRepositorySynchronizationsTable.create(ContainerRepositorySynchronization(repository)).redirectUrl(request)
+    val PostSynchronizeNewImagesRoute = ::postSynchronizeNewImages
+    fun postSynchronizeNewImages(id: Long, request: HttpServletRequest): String {
+        val (_, repository) = findContainerRepository(id, request)
+        return ContainerRepositorySynchronizationTasksTable.create(ContainerRepositorySynchronizationTask(repository, false)).redirectUrl(request)
+    }
+
+    @JvmField
+    val PostFullSynchronizationRoute = ::postFullSynchronization
+    fun postFullSynchronization(id: Long, request: HttpServletRequest): String {
+        val (_, repository) = findContainerRepository(id, request)
+        return ContainerRepositorySynchronizationTasksTable.create(ContainerRepositorySynchronizationTask(repository, false)).redirectUrl(request)
     }
 
     @JvmField
@@ -131,13 +133,13 @@ object ContainerRepositoryUiController : UiController() {
     }
 
     fun getEdit(id: Long, request: HttpServletRequest): String {
-        val (registry, repository) = findContainerRepository(id, request, Role.VIEWER)
+        val (registry, repository) = findContainerRepository(id, request)
         setupSaveRequest(registry, repository, request)
         return editJsp
     }
 
     fun postUpdate(id: Long, request: HttpServletRequest, parameters: RequestParameters): String {
-        val (registry, repository) = findContainerRepository(id, request, Role.VIEWER)
+        val (registry, repository) = findContainerRepository(id, request)
 
         update(repository, request, parameters)
 
@@ -170,17 +172,15 @@ object ContainerRepositoryUiController : UiController() {
         }
     }
 
+    
     private fun setupViewRequest(panel: String, coordinates: ContainerRepositoryCoordinates, request: HttpServletRequest): String {
         request.pageObject = coordinates.repository
-        request["parent"] = MaterialGroupsTable.findParent(coordinates.repository.parentId, coordinates.repository.parentType)
         request["registry"] = coordinates.registry
-        request["showEdit"] = request.userSession.hasRoleFor(coordinates.repository, Role.EDITOR)
 
         return if (request.hxTab) {
             request.noLayout()
             "$panelsJspPath/$panel"
         } else {
-            request["canSynchronize"] = request.userSession.hasRoleFor(coordinates.repository, Role.EDITOR)
             request.tags = ContainerRepositoryTagsTable.findCachedTagsFor(coordinates.repository.id)
             request["panel"] = panel
             viewJsp
@@ -214,16 +214,19 @@ object ContainerRepositoryUiController : UiController() {
         repository.active = parameters.getBoolean("active", repository.active)
     }
 
-    private fun findCoordinates(id: Long, request: HttpServletRequest): ContainerRepositoryCoordinates {
+    private fun findContainerRepository(id: Long, request: HttpServletRequest): ContainerRepositoryCoordinates {
         val coordinates = ContainerRepositoryCoordinates.findById(id) ?: throw ReturnStatus.NotFound404
-        val userSession = request.userSession
-        if (!userSession.hasRoleFor(coordinates.repository, minimumRequiredRole)) {
-            throw ReturnStatus.Forbidden403
-        }
         return coordinates
     }
 
-    private fun initializeRepository(request: HttpServletRequest, parameters: RequestParameters): ContainerRepository  {
+    private fun initializeRepository(request: HttpServletRequest, parameters: RequestParameters, response: HttpServletResponse): ContainerRepository  {
+
+        val registries = ContainerRegistriesTable.findAll().sortedBy { it.name }
+
+        if (registries.isEmpty()) {
+            throw request.redirectToReferrer(response)
+        }
+
         val parentId = parameters.getLong("parentId") ?: run {
             log.warn("Received new container repository request: ${request.route} without parentId parameter from user: ${request.optionalUser}")
             throw ReturnStatus.BadRequest400

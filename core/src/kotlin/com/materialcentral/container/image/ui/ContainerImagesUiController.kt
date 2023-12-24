@@ -4,6 +4,8 @@ import com.materialcentral.container.ContainerUiController
 import org.geezer.io.set
 import org.geezer.io.ui.table.isUiTableRequest
 import com.materialcentral.container.image.*
+import com.materialcentral.container.image.task.ContainerImageSynchronizationTask
+import com.materialcentral.container.image.task.ContainerImageSynchronizationTasksTable
 import org.geezer.system.runtime.RuntimeClock
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -199,7 +201,7 @@ object ContainerImagesUiController : UiController() {
     fun postSynchronize(id: Long, request: HttpServletRequest): String {
         val (_, _, image) = findImageIfAuthorized(id, request, Role.OWNER, Role.SECURITY_OFFICER)
 
-        return ContainerImageSynchronizationsTable.create(ContainerImageSynchronization(image)).redirectUrl(request)
+        return ContainerImageSynchronizationTasksTable.create(ContainerImageSynchronizationTask(image)).redirectUrl(request)
     }
     @JvmField
     val StartScanRoute = ::getStartScan

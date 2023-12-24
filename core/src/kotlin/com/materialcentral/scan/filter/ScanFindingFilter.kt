@@ -2,6 +2,7 @@ package com.materialcentral.scan.filter
 
 import com.materialcentral.CandidateMatchType
 import com.materialcentral.scan.FindingType
+import com.materialcentral.scan.filter.ui.ScanFindingFiltersUiController
 import org.geezer.db.Data
 import org.geezer.io.ui.FontIcon
 import org.geezer.io.ui.HasNameDescriptionIcon
@@ -24,8 +25,7 @@ class ScanFindingFilter(
 
     override val icon: FontIcon = Icon
 
-    override val route: KFunction<*>
-        get() = TODO("Not yet implemented")
+    override val route: KFunction<*> = Route
 
     val findingPrimaryIdentifierRegexs: List<Regex> by lazy { findingPrimaryIdentifierPatterns.mapNotNull { it.toRegexOrNull() } }
 
@@ -36,5 +36,8 @@ class ScanFindingFilter(
     companion object {
         @JvmField
         val Icon = FontIcon("fa-filter", "f0b0")
+
+        @JvmField
+        val Route = ScanFindingFiltersUiController::getFilter
     }
 }

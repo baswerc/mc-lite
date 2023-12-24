@@ -1,10 +1,11 @@
-package com.materialcentral.scan.schedule
+package com.materialcentral.schedule
 
 import arrow.core.Either
 import arrow.core.right
 import com.beust.klaxon.JsonObject
 import org.geezer.json.Jsonable
 import org.geezer.db.schema.JsonObjectDecoder
+import org.geezer.json.JsonableObject
 import org.geezer.system.runtime.BooleanProperty
 import org.geezer.system.runtime.RuntimeClock
 import org.jetbrains.exposed.sql.Column
@@ -12,13 +13,13 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 
-class ScanDays(val sunday: Boolean,
-               val monday: Boolean,
-               val tuesday: Boolean,
-               val wednesday: Boolean,
-               val thursday: Boolean,
-               val friday: Boolean,
-               val saturday: Boolean) : Jsonable {
+class DaysOfWeek(val sunday: Boolean,
+                 val monday: Boolean,
+                 val tuesday: Boolean,
+                 val wednesday: Boolean,
+                 val thursday: Boolean,
+                 val friday: Boolean,
+                 val saturday: Boolean) : JsonableObject {
 
     constructor() : this(defaultSunday(), defaultMonday(), defaultTuesday(), defaultWednesday(), defaultThursday(), defaultFriday(), defaultSaturday())
 
@@ -48,7 +49,7 @@ class ScanDays(val sunday: Boolean,
         }
     }
 
-    companion object : JsonObjectDecoder<ScanDays> {
+    companion object : JsonObjectDecoder<DaysOfWeek> {
         val defaultSunday = BooleanProperty("DefaultScanDaysSunday", true)
 
         val defaultMonday = BooleanProperty("DefaultScanDaysMonday", true)
@@ -64,11 +65,11 @@ class ScanDays(val sunday: Boolean,
         val defaultSaturday = BooleanProperty("DefaultScanDaysSaturday", true)
 
         private val log: Logger = LoggerFactory.getLogger(javaClass)
-        override fun createDefault(): ScanDays {
-            return ScanDays()
+        override fun createDefault(): DaysOfWeek {
+            return DaysOfWeek()
         }
 
-        fun map(json: JsonObject): Either<String, ScanDays> {
+        fun map(json: JsonObject): Either<String, DaysOfWeek> {
             val sunday = json.boolean("sunday") ?: defaultSunday()
             val monday = json.boolean("monday") ?: defaultMonday()
             val tuesday = json.boolean("tuesday") ?: defaultTuesday()
@@ -77,10 +78,10 @@ class ScanDays(val sunday: Boolean,
             val friday = json.boolean("friday") ?: defaultFriday()
             val saturday = json.boolean("saturday") ?: defaultSaturday()
 
-            return ScanDays(sunday, monday, tuesday, wednesday, thursday, friday, saturday).right()
+            return DaysOfWeek(sunday, monday, tuesday, wednesday, thursday, friday, saturday).right()
         }
 
-        override fun decode(json: JsonObject, column: Column<*>, attributes: Map<String, Any>): Either<String, ScanDays> {
+        override fun decode(json: JsonObject, column: Column<*>, attributes: Map<String, Any>): Either<String, DaysOfWeek> {
             return map(json)
         }
 

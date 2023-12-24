@@ -5,15 +5,18 @@ import com.materialcentral.job.JobInitializationParameters
 import com.materialcentral.job.JobState
 import com.materialcentral.job.JobWorker
 import com.materialcentral.container.image.*
+import com.materialcentral.container.image.task.ContainerImageSynchronizer
 import com.materialcentral.container.registry.client.ContainerRegistryClient
 import com.materialcentral.container.registry.client.TagMetadata
+import com.materialcentral.container.repository.task.ContainerRepositorySynchronizationTask
+import com.materialcentral.container.repository.task.ContainerRepositorySynchronizationTasksTable
 import org.geezer.system.runtime.IntProperty
 import org.geezer.system.runtime.RuntimeClock
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
 
-object ContainerRepositorySynchronizer : JobWorker<ContainerRepositorySynchronization>(ContainerRepositorySynchronization::class, ContainerRepositorySynchronizationsTable), JobCreator{
+object ContainerRepositorySynchronizer : JobWorker<ContainerRepositorySynchronizationTask>(ContainerRepositorySynchronizationTask::class, ContainerRepositorySynchronizationTasksTable), JobCreator{
 
     val minutesBetweenSynchronization = IntProperty("ContainerRepositoryMinMinutesBetweenSynchronization", 60)
 
@@ -29,13 +32,13 @@ object ContainerRepositorySynchronizer : JobWorker<ContainerRepositorySynchroniz
         val containerRepositoryIds = ContainerRepositoriesTable.slice(ContainerRepositoriesTable.id).select {
             (ContainerRepositoriesTable.active eq true) and
                     ((ContainerRepositoriesTable.imagesLastSynchronizedAt eq null) or (ContainerRepositoriesTable.imagesLastSynchronizedAt lessEq maxLastSynchronized)) and
-                    notExists(ContainerRepositorySynchronizationsTable.select { (ContainerRepositorySynchronizationsTable.containerRepositoryId eq ContainerRepositoriesTable.id) and
-                            (ContainerRepositorySynchronizationsTable.state inList JobState.activeStates)})}.map { it[ContainerRepositoriesTable.id] }
+                    notExists(ContainerRepositorySynchronizationTasksTable.select { (ContainerRepositorySynchronizationTasksTable.containerRepositoryId eq ContainerRepositoriesTable.id) and
+                            (ContainerRepositorySynchronizationTasksTable.state inList JobState.activeStates)})}.map { it[ContainerRepositoriesTable.id] }
 
         for (containerRepositoryId in containerRepositoryIds) {
-            val maxCreatedAtCol = ContainerRepositorySynchronizationsTable.createdAt.max()
-            val maxCreatedAt = ContainerRepositorySynchronizationsTable.slice(maxCreatedAtCol).select { (ContainerRepositorySynchronizationsTable.containerRepositoryId eq containerRepositoryId) and
-                    (ContainerRepositorySynchronizationsTable.reevaluateLayers eq true) and (ContainerRepositorySynchronizationsTable.synchronizeUntaggedImages)}.singleOrNull()?.let { it[maxCreatedAtCol] }
+            val maxCreatedAtCol = ContainerRepositorySynchronizationTasksTable.createdAt.max()
+            val maxCreatedAt = ContainerRepositorySynchronizationTasksTable.slice(maxCreatedAtCol).select { (ContainerRepositorySynchronizationTasksTable.containerRepositoryId eq containerRepositoryId) and
+                    (ContainerRepositorySynchronizationTasksTable.fullSynchronization eq true) and (ContainerRepositorySynchronizationTasksTable.synchronizeUntaggedImages)}.singleOrNull()?.let { it[maxCreatedAtCol] }
 
             var reevaluateLayers = false
             var synchronizeUntaggedImages = false
@@ -44,10 +47,10 @@ object ContainerRepositorySynchronizer : JobWorker<ContainerRepositorySynchroniz
                 synchronizeUntaggedImages = true
             }
 
-            ContainerRepositorySynchronizationsTable.create(ContainerRepositorySynchronization(containerRepositoryId, reevaluateLayers, synchronizeUntaggedImages, JobInitializationParameters()))
+            ContainerRepositorySynchronizationTasksTable.create(ContainerRepositorySynchronizationTask(containerRepositoryId, reevaluateLayers, synchronizeUntaggedImages, JobInitializationParameters()))
         }
     }
-    override fun work(job: ContainerRepositorySynchronization) {
+    override fun work(job: ContainerRepositorySynchronizationTask) {
         val (registry, repository) = ContainerRepositoryCoordinates.getById(job.containerRepositoryId)
         log.info("Starting container image synchronization for: ${repository.name}")
         try {
@@ -82,7 +85,7 @@ object ContainerRepositorySynchronizer : JobWorker<ContainerRepositorySynchroniz
                 ContainerImageSynchronizer.synchronizeProperties(image, metadata)
                 ContainerImageSynchronizer.synchronizeTags(image, metadata, allTags, synchronizationStartedAt)
 
-                if (newImage || job.reevaluateLayers) {
+                if (newImage || job.fullSynchronization) {
                     ContainerImageSynchronizer.synchronizeLayers(image, metadata.manifest)
                 }
 
@@ -103,7 +106,7 @@ object ContainerRepositorySynchronizer : JobWorker<ContainerRepositorySynchroniz
                     ContainerImageSynchronizer.synchronizeProperties(image, metadata)
                     if (metadata != null) {
                         ContainerImageSynchronizer.synchronizeTags(image, metadata, allTags, synchronizationStartedAt)
-                        if (job.reevaluateLayers) {
+                        if (job.fullSynchronization) {
                             ContainerImageSynchronizer.synchronizeLayers(image, metadata.manifest)
                         }
                     }

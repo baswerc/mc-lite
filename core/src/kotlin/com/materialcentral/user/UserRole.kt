@@ -8,9 +8,8 @@ enum class UserRole(override val id: Int, override val readableId: String, overr
     NO_ACCESS(0, "no-access", "No Access", listOf(), ""),
     VIEWER(1, "viewer", "Viewer", listOf(), ""),
     EDITOR(2, "editor", "Editor", listOf(VIEWER), ""),
-    OWNER(3, "owner", "Owner", listOf(VIEWER, EDITOR), ""),
     SECURITY_OFFICER(4, "security-officer", "Security Officer", listOf(VIEWER), ""),
-    ADMINISTRATOR(5, "administrator", "Administrator", listOf(VIEWER, EDITOR, OWNER, SECURITY_OFFICER), "");
+    ADMINISTRATOR(5, "administrator", "Administrator", listOf(VIEWER, EDITOR, SECURITY_OFFICER), "");
 
     fun equivalentRoles(): List<UserRole> {
         return listOf(this) + values().filter { it != this && it.impliedRoles.contains(this) }

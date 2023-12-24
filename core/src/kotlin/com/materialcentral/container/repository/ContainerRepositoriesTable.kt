@@ -23,7 +23,9 @@ object ContainerRepositoriesTable : DataTable<ContainerRepository>("container_re
 
     val baseContainerRepository = bool("base_container_repository")
 
-    val imagesLastSynchronizedAt = long("images_last_synchronized_at").nullable()
+    val lastNewImagesCheckAt = long("last_new_images_check_at").nullable()
+
+    val lastFullSynchronizationAt = long("last_full_synchronization_at").nullable()
 
     val existsInRegistry = bool("exists_in_registry").nullable()
 
@@ -41,7 +43,8 @@ object ContainerRepositoriesTable : DataTable<ContainerRepository>("container_re
         statement[containerRegistryId] = repository.containerRegistryId
         statement[baseContainerRepositoryId] = repository.baseContainerRepositoryId
         statement[baseContainerRepository] = repository.baseContainerRepository
-        statement[imagesLastSynchronizedAt] = repository.imagesLastSynchronizedAt
+        statement[lastNewImagesCheckAt] = repository.lastNewImagesCheckAt
+        statement[lastFullSynchronizationAt] = repository.lastFullSynchronizationAt
         statement[existsInRegistry] = repository.existsInRegistry
         statement[latestImageUploadedAt] = repository.latestImageUploadedAt
         statement[addedAt] = repository.addedAt
@@ -49,8 +52,8 @@ object ContainerRepositoriesTable : DataTable<ContainerRepository>("container_re
     }
 
     override fun constructData(row: ResultRow): ContainerRepository {
-        return ContainerRepository(row[containerRegistryId], row[name], row[description], row[baseContainerRepositoryId], row[baseContainerRepository], row[imagesLastSynchronizedAt],
-            row[existsInRegistry], row[latestImageUploadedAt], row[active], row[addedAt])
+        return ContainerRepository(row[containerRegistryId], row[name], row[description], row[baseContainerRepositoryId], row[baseContainerRepository], row[lastNewImagesCheckAt],
+            row[lastFullSynchronizationAt], row[existsInRegistry], row[latestImageUploadedAt], row[active], row[addedAt])
     }
 
     fun nameExistsInRegistry(containerRegistryId: Long, name: String): Boolean {

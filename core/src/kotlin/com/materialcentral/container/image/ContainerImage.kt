@@ -6,8 +6,10 @@ import com.materialcentral.os.Architecture
 import com.materialcentral.os.LinuxDistribution
 import com.materialcentral.os.OperatingSystemType
 import com.materialcentral.container.image.ui.ContainerImagesUiController
+import com.materialcentral.container.repository.ContainerRepositoriesTable
 import com.materialcentral.container.repository.ContainerRepository
 import com.materialcentral.scan.ScanTarget
+import com.materialcentral.scan.ScanTargetSource
 import com.materialcentral.scan.ScanTargetType
 import org.geezer.db.Data
 import org.geezer.io.ui.HasNameIcon
@@ -27,10 +29,22 @@ class ContainerImage(
     var architecture: Architecture?,
     var bytesSize: Long?,
     var latestInRepository: Boolean,
-    var deletedFromRepository: Boolean
+    var deletedFromRepository: Boolean,
+    var lastSynchronizedAt: Long?
 ) : Data(), Linkable, HasNameIcon, ScanTarget {
 
     override val scanTargetType: ScanTargetType = ScanTargetType.CONTAINER_IMAGE
+
+    override val scanTargetSourceId: Long
+        get() = containerRepositoryId
+
+    override fun getNameForScan(): String {
+        return ContainerImageCoordinates.getById(id).name
+    }
+
+    override fun lookupScanSource(): ScanTargetSource {
+        return ContainerRepositoriesTable.getById(containerRepositoryId)
+    }
 
     override val route: KFunction<*> = ContainerImagesUiController::getImage
 
@@ -47,7 +61,7 @@ class ContainerImage(
         }
 
     constructor(repository: ContainerRepository, digest: String, createdAt: Long = RuntimeClock.now) :
-            this(repository.id, digest, shortenDigest(digest), createdAt, null, false, null, null, null, null, null, false, false)
+            this(repository.id, digest, shortenDigest(digest), createdAt, null, false, null, null, null, null, null, false, false, null)
 
 
     companion object {

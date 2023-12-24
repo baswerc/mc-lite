@@ -28,7 +28,7 @@ object ScanFindingFiltersUiTable : UiTable(ScanFindingFiltersTable.id) {
         })
 
         columns.add(UiColumn("Candidate Type") { html, row, _, _ ->
-            row[ScanFindingFiltersTable.candidateType].addTo(html)
+            row[ScanFindingFiltersTable.candidateMatchType].addTo(html)
         })
 
         columns.add(UiColumn("Reason") { html, row, _, _ ->
@@ -52,7 +52,7 @@ object ScanFindingFiltersUiTable : UiTable(ScanFindingFiltersTable.id) {
             ScanFindingFiltersTable.select {
                 (ScanFindingFiltersTable.name ilike searchQuery) or
                 (ScanFindingFiltersTable.description ilike searchQuery) or
-                (ScanFindingFiltersTable.candidateType.enumLike(searchQuery, CandidateMatchType)) or
+                (ScanFindingFiltersTable.candidateMatchType.enumLike(searchQuery, CandidateMatchType)) or
                 (ScanFindingFiltersTable.findingType.enumLike(searchQuery, FindingType)) or
                 (ScanFindingFiltersTable.reason.enumLike(searchQuery, ScanFindingFilterReason))
             }

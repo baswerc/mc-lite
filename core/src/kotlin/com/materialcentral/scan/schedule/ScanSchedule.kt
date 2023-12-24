@@ -8,6 +8,8 @@ import com.materialcentral.scan.ScanConfiguration
 import com.materialcentral.scan.ScanMedium
 import com.materialcentral.scan.ScanTargetSourceType
 import com.materialcentral.scan.schedule.ui.ScanScheduleUiController
+import com.materialcentral.schedule.DaysOfWeek
+import com.materialcentral.schedule.TimeRange
 import org.geezer.io.ui.HasNameDescriptionIcon
 import org.geezer.system.runtime.IntProperty
 import org.geezer.system.runtime.RuntimeClock
@@ -23,8 +25,8 @@ class ScanSchedule(
     var scanConfiguration: ScanConfiguration,
     var contributeToTargetMetadata: Boolean,
     var minimumHoursBetweenScans: Int?,
-    var scanTimeRange: ScanTimeRange?,
-    var scanDays: ScanDays?,
+    var timeRange: TimeRange?,
+    var scanDays: DaysOfWeek?,
     val scanAllTargets: Boolean, // container images, code branches
     val scanDefaultTarget: Boolean, // latest container image, default code branch
     val scanTargetNamePatterns: List<String>, // container image tag name pattern, code branch tag name patterns
